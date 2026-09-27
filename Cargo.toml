@@ -1,0 +1,32 @@
+[package]
+name = "odysseus_engine"
+version = "0.1.0"
+edition = "2021"
+
+[lib]
+name = "odysseus_engine"
+path = "src/lib.rs"
+
+[dependencies]
+reqwest = { version = "0.11", features = ["native-tls", "socks"] }
+scraper = "0.12.0"
+tokio = { version = "1", features = ["full", "rt-multi-thread", "macros"] }
+anyhow = "1.0"
+deno_core = "0.272"
+url = "2.4"
+serde = { version = "1.0", features = ["derive"] }
+serde_json = "1.0"
+moka = { version = "0.12", features = ["future"] }
+axum = "0.7"
+tower = "0.4"
+tower-http = { version = "0.5", features = ["cors", "trace"] }
+tracing = "0.1"
+tracing-subscriber = { version = "0.3", features = ["env-filter"] }
+rand = "0.8"
+flate2 = "1.0"
+
+[workspace]
+resolver = "2"
+
+[patch."https://github.com/servo/rust-idna"]
+idna = { version = "=1.0.1" }

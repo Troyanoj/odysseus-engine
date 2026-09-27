@@ -1,0 +1,31 @@
+version: "3.8"
+
+services:
+  odysseus:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: odysseus-engine
+    ports:
+      - "3000:3000"
+    environment:
+      - PORT=3000
+      - API_KEY=${API_KEY:-change-me-in-production}
+      - RUST_LOG=${RUST_LOG:-info}
+      - PROXIES=${PROXIES:-}
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:3000/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 10s
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
+
+networks:
+  default:
+    name: odysseus-network
