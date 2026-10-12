@@ -136,7 +136,7 @@ This means you are free to use, modify, and distribute this code, provided that 
 
 We offer **Commercial Licenses** that remove AGPL restrictions, along with priority support, custom extractor packs, and advanced Cloudflare evasion integrations.
 
-📩 **Contact for Enterprise Licensing**: your-email@example.com
+📩 **Contact for Enterprise Licensing**: jfsa6888@gmail.com
 
 ---
 
