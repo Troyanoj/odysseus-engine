@@ -126,6 +126,32 @@ docker compose up -d
 
 ---
 
+## ⚠️ Known Limitations
+
+Odysseus Engine v1.0 is optimized for **speed, efficiency, and semantic extraction** of static or server-side rendered (SSR) content. It is intentionally lightweight (~45MB Docker image) and does not include a full headless browser.
+
+**What Odysseus excels at:**
+- ✅ News articles, blogs, documentation, and static websites
+- ✅ Server-side rendered (SSR) content
+- ✅ Pages with soft paywalls (via Smart Fallback Pipeline: AMP → Archive.ph)
+- ✅ Structured data extraction (JSON-LD, Open Graph, Twitter Cards)
+
+**What Odysseus does NOT handle (yet):**
+- ❌ Sites with advanced client-side anti-bot protection (PerimeterX, Cloudflare Managed Challenge, DataDome)
+- ❌ Complex SPAs where all data is loaded via JavaScript after user interaction (e.g., flight search engines like Skyscanner, Kayak)
+- ❌ Sites requiring CAPTCHA solving or browser fingerprinting evasion beyond HTTP headers
+- ❌ Interactive workflows (clicking buttons, filling forms, infinite scrolling)
+
+**Roadmap for v2.0 (Hybrid Architecture):**
+For use cases requiring full browser capabilities, we are planning a hybrid architecture:
+1. **Fast Path (Odysseus Core)**: Static extraction for 80% of the web (current behavior)
+2. **Heavy Path (Headless Chrome Fallback)**: Optional integration with Playwright/Puppeteer for protected SPAs
+3. **Residential Proxy Integration**: For domains with aggressive IP-based blocking
+
+If you need to extract data from highly protected transactional sites today, we recommend combining Odysseus with a dedicated browser automation service or our upcoming Enterprise tier.
+
+---
+
 ## ⚖️ License & Commercial Use
 
 This project is licensed under the **GNU Affero General Public License v3.0 (AGPL-3.0)**.
