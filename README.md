@@ -64,7 +64,67 @@ The API will start at `http://0.0.0.0:3000`
 
 ---
 
+## 🐍 Quick Start with Python (Recommended)
+
+We've built a lightweight, fully-typed Python SDK to get you started in seconds:
+
+### Install the SDK
+
+```bash
+pip install odysseus-engine
+```
+
+> **Note:** Available on PyPI soon. For local development, install from source:
+> ```bash
+> git clone https://github.com/Troyanoj/odysseus-engine.git
+> cd odysseus-engine/sdk/python
+> pip install -e .
+> ```
+
+### Extract data in 3 lines of code
+
+```python
+from odysseus import OdysseusClient
+
+# Initialize the client
+client = OdysseusClient(api_key="your-secret-key", base_url="http://localhost:3000")
+
+# Extract with Stealth mode (bypasses soft blocks)
+result = client.extract("https://www.coindesk.com/...", mode="stealth")
+
+if result.get("success"):
+    print(f"✅ Title: {result['data'][0]['Ok']['title']}")
+    print(f"✅ Markdown length: {len(result['data'][0]['Ok']['markdown'])} chars")
+```
+
+---
+
+## 🚀 Quick Start (Local)
+
+1. **Clone the repository**:
+   ```bash
+   git clone https://github.com/Troyanoj/odysseus-engine.git
+   cd odysseus-engine
+   ```
+
+2. **Set up environment variables** (optional, defaults are provided):
+   ```bash
+   export API_KEY="your-secret-key"
+   export PORT="3000"
+   ```
+
+3. **Run in release mode**:
+   ```bash
+   cargo run --release
+   ```
+
+The API will start at `http://0.0.0.0:3000`
+
+---
+
 ## 📡 API Usage
+
+**Prefer Python? Use our official [SDK](#-quick-start-with-python-recommended).** Otherwise, you can interact directly via REST:
 
 ### 1. Health Check
 ```bash
