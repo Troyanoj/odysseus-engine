@@ -286,6 +286,65 @@ fn extract_metadata(document: &Html) -> HashMap<String, String> {
     metadata
 }
 
+fn table_to_markdown(element: ElementRef, seen_links: &mut HashSet<String>, base_url: &Url) -> String {
+    let mut rows: Vec<Vec<String>> = Vec::new();
+    
+    // Buscar todas las filas (tr), ya estén en thead, tbody o directamente en table
+    let tr_selector = match Selector::parse("tr") {
+        Ok(s) => s,
+        Err(_) => return String::new(),
+    };
+    
+    for tr in element.select(&tr_selector) {
+        let mut current_row: Vec<String> = Vec::new();
+        
+        // Buscar celdas de encabezado (th) y datos (td)
+        let cell_selector = match Selector::parse("th, td") {
+            Ok(s) => s,
+            Err(_) => continue,
+        };
+        
+        for cell in tr.select(&cell_selector) {
+            // Reutilizamos element_to_markdown para procesar enlaces, negritas, etc., dentro de la celda
+            let cell_content = element_to_markdown(cell, seen_links, base_url);
+            // Limpiamos saltos de línea internos para que la fila markdown no se rompa
+            let clean_content = cell_content.replace('\n', " ").replace('|', "\\|").trim().to_string();
+            current_row.push(clean_content);
+        }
+        
+        if !current_row.is_empty() {
+            rows.push(current_row);
+        }
+    }
+
+    if rows.is_empty() {
+        return String::new();
+    }
+
+    // Construir la tabla Markdown
+    let mut markdown_table = String::new();
+    
+    // 1. Fila de encabezados (la primera fila)
+    markdown_table.push_str(&format!("| {} |\n", rows[0].join(" | ")));
+    
+    // 2. Línea separadora
+    let separator: Vec<&str> = vec!["---"; rows[0].len()];
+    markdown_table.push_str(&format!("| {} |\n", separator.join(" | ")));
+    
+    // 3. Filas de datos (desde la segunda fila en adelante)
+    for row in rows.iter().skip(1) {
+        // Asegurarnos de que la fila tenga el mismo número de columnas que el encabezado
+        let mut padded_row = row.clone();
+        while padded_row.len() < rows[0].len() {
+            padded_row.push(String::from(" "));
+        }
+        markdown_table.push_str(&format!("| {} |\n", padded_row.join(" | ")));
+    }
+    
+    markdown_table.push_str("\n");
+    markdown_table
+}
+
 fn element_to_markdown(element: ElementRef, seen_links: &mut HashSet<String>, base_url: &Url) -> String {
     let tag_name = element.value().name();
     
@@ -347,6 +406,29 @@ fn element_to_markdown(element: ElementRef, seen_links: &mut HashSet<String>, ba
                 }
             } else {
                 inner_text
+            }
+        }
+        "table" => {
+            // Lista de clases CSS que indican tablas de navegación o metadatos
+            let noisy_classes = [
+                "navbox", "infobox", "vertical-navbox", "metadata",
+                "sisterproject", "ambox", "tmbox", "dmbox", "fmbox",
+                "mbox-small", "sidebar", "collapsible", "autocollapse",
+                "toc", "messagebox", "noprint"
+            ];
+
+            // Verificar si la tabla tiene alguna de estas clases
+            let has_noisy_class = element.value().attr("class")
+                .map(|classes| {
+                    noisy_classes.iter().any(|noisy| classes.contains(noisy))
+                })
+                .unwrap_or(false);
+
+            // Si tiene clase ruidosa, devolver string vacío; si no, procesar normalmente
+            if has_noisy_class {
+                String::new()
+            } else {
+                table_to_markdown(element, seen_links, base_url)
             }
         }
         _ => inner_text,
